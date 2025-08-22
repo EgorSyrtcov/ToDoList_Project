@@ -21,11 +21,7 @@ final class ToDoListViewController: UIViewController {
         view.backgroundColor = .red
     }
     
-    private func setupUI() {
+    private func setupUI() {}
 
-    }
-
-    private func viewModelBinding() {
-
-    }
+    private func viewModelBinding() {}
 }

@@ -1,17 +1,11 @@
 import UIKit
 import Combine
 
-struct ToDoListRouting {
+struct ToDoListRouting {}
 
-}
+protocol ToDoListInput {}
 
-protocol ToDoListInput {
-
-}
-
-protocol ToDoListOutput {
-
-}
+protocol ToDoListOutput {}
 
 typealias ToDoListVMInterface = ToDoListInput & ToDoListOutput
 
@@ -34,8 +28,6 @@ final class ToDoListViewModel: ToDoListVMInterface {
         configureBindings()
     }
 
-    private func configureBindings() {
-
-    }
+    private func configureBindings() {}
 
 }
