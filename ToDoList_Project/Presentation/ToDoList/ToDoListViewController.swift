@@ -26,14 +26,14 @@ final class ToDoListViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.placeholder = "Поиск задач..."
+        searchBar.placeholder = "Search"
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         searchBar.tintColor = .white
         if let textField = searchBar.value(forKey: "searchField") as? UITextField {
             textField.textColor = .white
             textField.attributedPlaceholder = NSAttributedString(
-                string: "Поиск задач...",
+                string: "Search",
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
             )
         }
