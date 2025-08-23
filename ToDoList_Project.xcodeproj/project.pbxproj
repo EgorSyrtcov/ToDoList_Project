@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E2D25B722E5991770054E236 /* ToDoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B712E5991770054E236 /* ToDoList.swift */; };
 		E2DE80C72E58F438005249D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80C62E58F438005249D4 /* AppDelegate.swift */; };
 		E2DE80C92E58F438005249D4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80C82E58F438005249D4 /* SceneDelegate.swift */; };
 		E2DE80D02E58F43A005249D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2DE80CF2E58F43A005249D4 /* Assets.xcassets */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E2D25B712E5991770054E236 /* ToDoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoList.swift; sourceTree = "<group>"; };
 		E2DE80C32E58F438005249D4 /* ToDoList_Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList_Project.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2DE80C62E58F438005249D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2DE80C82E58F438005249D4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -55,6 +57,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E2D25B702E59915D0054E236 /* ToDoList */ = {
+			isa = PBXGroup;
+			children = (
+				E2D25B712E5991770054E236 /* ToDoList.swift */,
+			);
+			path = ToDoList;
+			sourceTree = "<group>";
+		};
 		E2DE80BA2E58F438005249D4 = {
 			isa = PBXGroup;
 			children = (
@@ -120,6 +130,7 @@
 		E2DE80DD2E58F4B1005249D4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E2D25B702E59915D0054E236 /* ToDoList */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -243,6 +254,7 @@
 				E2DE80E52E58F587005249D4 /* AppCoordinator.swift in Sources */,
 				E2DE80E82E58F602005249D4 /* ToDoListCoordinator.swift in Sources */,
 				E2DE80C72E58F438005249D4 /* AppDelegate.swift in Sources */,
+				E2D25B722E5991770054E236 /* ToDoList.swift in Sources */,
 				E2DE80F22E58F9A1005249D4 /* UITableViewCell.swift in Sources */,
 				E2DE80F02E58F97F005249D4 /* UITableView.swift in Sources */,
 				E2DE80C92E58F438005249D4 /* SceneDelegate.swift in Sources */,
