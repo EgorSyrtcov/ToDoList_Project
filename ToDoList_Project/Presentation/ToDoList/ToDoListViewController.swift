@@ -15,6 +15,7 @@ final class ToDoListViewController: UIViewController {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.registerClassForCell(TaskTableViewCell.self)
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .black
@@ -184,10 +185,6 @@ extension ToDoListViewController: UITableViewDelegate {
             // Здесь будет логика удаления задачи
             print("🗑️ Удалить задачу: \(todo.todo)")
         }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
     }
 }
 
