@@ -3,7 +3,9 @@ import Combine
 
 struct ToDoListRouting {}
 
-protocol ToDoListInput {}
+protocol ToDoListInput {
+    func toggleTaskCompletion(_ task: Todo)
+}
 
 protocol ToDoListOutput {
     var toDoListPublisher: AnyPublisher<ToDoList?, Never> { get }
@@ -21,6 +23,10 @@ final class ToDoListViewModel: ToDoListVMInterface {
     private var routing: ToDoListRouting
     private var cancellables: Set<AnyCancellable> = []
     private let service = Service()
+    private let taskService = TaskService()
+    
+    // MARK: - Data
+    private var currentToDoList: ToDoList?
     
     // MARK: - Input
     
@@ -53,31 +59,59 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     private func configureBindings() {}
     
+    // MARK: - Input
+    
+    func toggleTaskCompletion(_ task: Todo) {
+            guard var toDoList = currentToDoList else {
+                print("❌ currentToDoList is nil")
+                return
+            }
+            
+            if let index = toDoList.todos.firstIndex(where: { $0.id == task.id }) {
+                toDoList.todos[index].completed.toggle()
+                currentToDoList = toDoList
+                
+                // Сохраняем изменения в CoreData
+                taskService.updateTaskLocally(toDoList.todos[index])
+                
+                DispatchQueue.main.async {
+                    self.toDoListSubject.send(toDoList)
+                }
+                
+                print("🔄 Статус задачи изменен: \(toDoList.todos[index].todo) - \(toDoList.todos[index].completed ? "выполнена" : "не выполнена")")
+            } else {
+                print("❌ Задача с ID \(task.id) не найдена в списке")
+            }
+        }
+    
     private func requestToDoLists() async {
-        // Показываем индикатор загрузки
         isLoadingSubject.send(true)
         
         defer { isLoadingSubject.send(false) }
         
         do {
-            let toDoData = try await service.execute(.getToDoListRequest(), expecting: ToDoList.self)
+            // Сначала проверяем локальные данные
+            let localTasks = taskService.getLocalTasks()
             
-            if let toDoData = toDoData {
-                print("✅ Данные успешно получены:")
-                print("📋 Всего задач: \(toDoData.total)")
-                print("📝 Первые 3 задачи:")
-                for (index, todo) in toDoData.todos.prefix(3).enumerated() {
-                    print("   \(index + 1). \(todo.todo) (завершена: \(todo.completed))")
-                }
+            if localTasks.isEmpty {
+                // Если локальных данных нет, загружаем с API
+                print("📱 Локальных данных нет, загружаем с API...")
+                let apiTasks = try await taskService.fetchTasksFromAPI()
+                taskService.saveTasksLocally(apiTasks)
                 
-                // Скрываем индикатор загрузки и отправляем данные
+                let toDoList = ToDoList(todos: apiTasks, total: apiTasks.count, skip: 0, limit: apiTasks.count)
+                currentToDoList = toDoList
                 DispatchQueue.main.async {
-                    self.toDoListSubject.send(toDoData)
+                    self.toDoListSubject.send(toDoList)
                 }
             } else {
-                print("❌ Данные не получены или пустые")
+                // Если есть локальные данные, используем их
+                print("📱 Загружены локальные данные: \(localTasks.count) задач")
+                let toDoList = ToDoList(todos: localTasks, total: localTasks.count, skip: 0, limit: localTasks.count)
+                currentToDoList = toDoList
+                
                 DispatchQueue.main.async {
-                    self.errorSubject.send("Не удалось получить данные")
+                    self.toDoListSubject.send(toDoList)
                 }
             }
             

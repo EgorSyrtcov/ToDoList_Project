@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - ToDoModel
 struct ToDoList: Codable {
-    let todos: [Todo]
+    var todos: [Todo]
     let total, skip, limit: Int
 }
 
@@ -10,7 +10,7 @@ struct ToDoList: Codable {
 struct Todo: Codable {
     let id: Int
     let todo: String
-    let completed: Bool
+    var completed: Bool
     let userID: Int
 
     enum CodingKeys: String, CodingKey {

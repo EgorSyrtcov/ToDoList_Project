@@ -6,7 +6,7 @@ final class ToDoListViewController: UIViewController {
     lazy private var activityIndicator: UIActivityIndicatorView = {
         var activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = .red
+        activityIndicator.color = .white
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         return activityIndicator
     }()
@@ -14,11 +14,49 @@ final class ToDoListViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.registerClassForCell(TaskTableViewCell.self)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .black
+        tableView.separatorColor = .darkGray
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 52, bottom: 0, right: 0)
         return tableView
+    }()
+    
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.placeholder = "Поиск задач..."
+        searchBar.searchBarStyle = .minimal
+        searchBar.delegate = self
+        searchBar.tintColor = .white
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            textField.textColor = .white
+            textField.attributedPlaceholder = NSAttributedString(
+                string: "Поиск задач...",
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+            )
+        }
+        return searchBar
+    }()
+    
+    private lazy var addButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addButtonTapped)
+        )
+        button.tintColor = .white
+        return button
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Задачи"
+        label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     // MARK: Public
@@ -27,6 +65,8 @@ final class ToDoListViewController: UIViewController {
     // MARK: Private
     private var cancellables: Set<AnyCancellable> = []
     private var toDoList: ToDoList?
+    private var filteredTodos: [Todo] = []
+    private var searchQuery: String = ""
     
     
     override func viewDidLoad() {
@@ -38,15 +78,24 @@ final class ToDoListViewController: UIViewController {
     }
     
     private func setup() {
-        view.backgroundColor = .white
-        title = "Список задач"
+        view.backgroundColor = .black
+        title = "Задачи"
+        navigationItem.rightBarButtonItem = addButton
     }
     
     private func setupUI() {
-        view.addSubviews(tableView, activityIndicator)
+        view.addSubviews(searchBar, tableView, activityIndicator, titleLabel)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -57,43 +106,62 @@ final class ToDoListViewController: UIViewController {
     }
     
     private func viewModelBinding() {
-        // Подписываемся на загрузку данных
         viewModel.toDoListPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] toDoList in
                 self?.toDoList = toDoList
+                self?.updateFilteredTodos()
                 self?.tableView.reloadData()
-                print("📱 Данные получены в ViewController: \(toDoList?.todos.count ?? 0) задач")
             }
             .store(in: &cancellables)
         
-        // Подписываемся на индикатор загрузки
         viewModel.isLoadingPublisher
             .sink { [weak self] in self?.update(isShown: $0) }
             .store(in: &cancellables)
         
-        // Подписываемся на ошибки
         viewModel.errorPublisher
             .sink { [weak self] error in
                 guard let self = self else { return }
-                self.showAlert(title: error, subtitle: "") }
+                self.showAlert(title: error, subtitle: "")
+            }
             .store(in: &cancellables)
+    }
+    
+    private func updateFilteredTodos() {
+        guard let toDoList = toDoList else {
+            filteredTodos = []
+            return
+        }
+        
+        if searchQuery.isEmpty {
+            filteredTodos = toDoList.todos
+        } else {
+            filteredTodos = toDoList.todos.filter { todo in
+                todo.todo.localizedCaseInsensitiveContains(searchQuery)
+            }
+        }
+    }
+    
+    @objc private func addButtonTapped() {
+        // логика добавления новой задачи
+        print("➕ Добавить новую задачу")
     }
 }
 
 // MARK: - UITableViewDataSource
 extension ToDoListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return toDoList?.todos.count ?? 0
+        return filteredTodos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(for: indexPath) as TaskTableViewCell
         
-        if let todo = toDoList?.todos[indexPath.row] {
-            cell.textLabel?.text = todo.todo
-            cell.accessoryType = todo.completed ? .checkmark : .none
-            cell.textLabel?.numberOfLines = 0
+        let todo = filteredTodos[indexPath.row]
+        cell.configure(with: todo)
+        cell.onCheckboxTapped = { [weak self] updatedTodo in
+            
+            self?.viewModel.toggleTaskCompletion(updatedTodo)
         }
         
         return cell
@@ -104,6 +172,35 @@ extension ToDoListViewController: UITableViewDataSource {
 extension ToDoListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let todo = filteredTodos[indexPath.row]
+        
+        // При нажатии на ячейку меняем статус задачи
+        viewModel.toggleTaskCompletion(todo)
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let todo = filteredTodos[indexPath.row]
+            // Здесь будет логика удаления задачи
+            print("🗑️ Удалить задачу: \(todo.todo)")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension ToDoListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchQuery = searchText
+        updateFilteredTodos()
+        tableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
 
