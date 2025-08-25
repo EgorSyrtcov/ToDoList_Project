@@ -54,6 +54,7 @@ final class TaskTableViewCell: UITableViewCell {
     
     var task: Todo?
     var onCheckboxTapped: ((Todo) -> Void)?
+    var onLongPress: ((Todo) -> Void)?
     
     // MARK: - Initialization
     
@@ -89,6 +90,9 @@ final class TaskTableViewCell: UITableViewCell {
             stackView.topAnchor.constraint(equalTo: topAnchor, constant: 12),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
         ])
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        contentView.addGestureRecognizer(longPress)
     }
     
     // MARK: - Configuration
@@ -205,4 +209,10 @@ final class TaskTableViewCell: UITableViewCell {
             // Вызываем callback
             onCheckboxTapped?(task)
         }
+    
+    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began, let task = task {
+            onLongPress?(task)
+        }
+    }
 }

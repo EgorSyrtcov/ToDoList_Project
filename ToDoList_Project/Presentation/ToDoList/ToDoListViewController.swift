@@ -205,6 +205,10 @@ extension ToDoListViewController: UITableViewDataSource {
             self?.updateCountLabel()
         }
         
+        cell.onLongPress = { longPressedTodo in
+            print("📌 Долгое нажатие на задачу: \(longPressedTodo.todo)")
+        }
+        
         return cell
     }
 }
