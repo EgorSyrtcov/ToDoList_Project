@@ -18,6 +18,19 @@ final class ToDoListCoordinator: Coordinator {
         let toDoListViewController = ToDoListViewController()
         toDoListViewController.viewModel = toDoListViewModel
         navigationController.setViewControllers([toDoListViewController], animated: false)
+        
+        routing.addTaskButtonDidTapSubject
+            .sink { [weak self] movie in
+                self?.showAddTaskViewController()
+            }.store(in: &cancellables)
+    }
+    
+    private func showAddTaskViewController() {
+        let addTaskRouting = AddTaskRouting()
+        let addTaskViewModel = AddTaskViewModel(routing: addTaskRouting)
+        let addTaskViewController = AddTaskViewController()
+        addTaskViewController.viewModel = addTaskViewModel
+        navigationController.pushViewController(addTaskViewController, animated: true)
     }
 }
 

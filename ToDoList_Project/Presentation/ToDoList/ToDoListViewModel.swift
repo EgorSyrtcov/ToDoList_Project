@@ -1,9 +1,12 @@
 import UIKit
 import Combine
 
-struct ToDoListRouting {}
+struct ToDoListRouting {
+    let addTaskButtonDidTapSubject = PassthroughSubject<Void, Never>()
+}
 
 protocol ToDoListInput {
+    var addTaskDidTapSubject: PassthroughSubject<Void, Never> { get }
     func toggleTaskCompletion(_ task: Todo)
     func deleteTaskCompletion(_ task: Todo)
     func updateSearchQuery(_ query: String)
@@ -34,6 +37,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
     private var currentToDoList: ToDoList?
     
     // MARK: - Input
+    var addTaskDidTapSubject = PassthroughSubject<Void, Never>()
     
     // MARK: - Output Publishers
     private let toDoListSubject = PassthroughSubject<ToDoList?, Never>()
@@ -67,6 +71,12 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     private func configureBindings() {
         Task { await requestToDoLists() }
+        
+        addTaskDidTapSubject
+            .sink { [weak self] _ in
+                self?.routing.addTaskButtonDidTapSubject.send()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Input

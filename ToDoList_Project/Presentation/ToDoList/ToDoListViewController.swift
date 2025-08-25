@@ -111,13 +111,13 @@ final class ToDoListViewController: UIViewController {
     private func viewModelBinding() {
         
         viewModel.filteredTodosPublisher
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] filteredTodos in
-                        self?.filteredTodos = filteredTodos
-                        self?.tableView.reloadData()
-                        self?.updateCountLabel()
-                    }
-                    .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] filteredTodos in
+                self?.filteredTodos = filteredTodos
+                self?.tableView.reloadData()
+                self?.updateCountLabel()
+            }
+            .store(in: &cancellables)
         
         viewModel.toDoListPublisher
             .receive(on: DispatchQueue.main)
@@ -146,8 +146,7 @@ final class ToDoListViewController: UIViewController {
     }
     
     @objc private func addButtonTapped() {
-        // логика добавления новой задачи
-        print("➕ Добавить новую задачу")
+        viewModel.addTaskDidTapSubject.send()
     }
 }
 
@@ -242,12 +241,12 @@ extension ToDoListViewController {
             blur.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         self.blurView = blur
-
+        
         let preview = TaskPreviewView()
         preview.configure(with: todo)
         view.addSubview(preview)
         self.previewContainer = preview
-
+        
         let actions = ActionsPopupView(
             onEdit: { [weak self] in self?.hideActionPopup(); print("Редактировать") },
             onShare: { [weak self] in self?.hideActionPopup(); self?.share(todo: todo) },
@@ -255,17 +254,17 @@ extension ToDoListViewController {
         )
         view.addSubview(actions)
         self.actionsContainer = actions
-
+        
         NSLayoutConstraint.activate([
             preview.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             preview.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             preview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-
+            
             actions.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
             actions.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
             actions.topAnchor.constraint(equalTo: preview.bottomAnchor, constant: 16)
         ])
-
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(hideActionPopup))
         blur.addGestureRecognizer(tap)
         UIView.animate(withDuration: 0.2) { blur.alpha = 1.0 }
@@ -284,7 +283,7 @@ extension ToDoListViewController {
             self.actionsContainer = nil
         })
     }
-
+    
     private func share(todo: Todo) {
         let text = todo.todo
         let vc = UIActivityViewController(activityItems: [text], applicationActivities: nil)
