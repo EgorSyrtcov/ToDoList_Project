@@ -32,8 +32,6 @@
 		E2FEDBA22E5C985100BF20F4 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA12E5C985100BF20F4 /* BottomBarView.swift */; };
 		E2FEDBA42E5C988500BF20F4 /* TaskPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA32E5C988500BF20F4 /* TaskPreviewView.swift */; };
 		E2FEDBA62E5C992E00BF20F4 /* ActionPopupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA52E5C992E00BF20F4 /* ActionPopupPresenter.swift */; };
-		E2FEDBAA2E5CB16800BF20F4 /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA82E5CB16800BF20F4 /* AddTaskViewController.swift */; };
-		E2FEDBAB2E5CB16800BF20F4 /* AddTaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA92E5CB16800BF20F4 /* AddTaskViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,8 +62,6 @@
 		E2FEDBA12E5C985100BF20F4 /* BottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
 		E2FEDBA32E5C988500BF20F4 /* TaskPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskPreviewView.swift; sourceTree = "<group>"; };
 		E2FEDBA52E5C992E00BF20F4 /* ActionPopupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActionPopupPresenter.swift; path = ../ActionPopupPresenter.swift; sourceTree = "<group>"; };
-		E2FEDBA82E5CB16800BF20F4 /* AddTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskViewController.swift; sourceTree = "<group>"; };
-		E2FEDBA92E5CB16800BF20F4 /* AddTaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,8 +208,6 @@
 		E2FEDBA72E5CB13800BF20F4 /* AddTask */ = {
 			isa = PBXGroup;
 			children = (
-				E2FEDBA82E5CB16800BF20F4 /* AddTaskViewController.swift */,
-				E2FEDBA92E5CB16800BF20F4 /* AddTaskViewModel.swift */,
 			);
 			path = AddTask;
 			sourceTree = "<group>";
@@ -289,14 +283,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2DE80EE2E58F956005249D4 /* UIView.swift in Sources */,
-				E2FEDBAA2E5CB16800BF20F4 /* AddTaskViewController.swift in Sources */,
 				E2D25B742E59C1B00054E236 /* LocalTask.swift in Sources */,
 				E2DE80F62E58FCD8005249D4 /* Request.swift in Sources */,
 				E2D25B802E59CDC90054E236 /* TaskService.swift in Sources */,
 				E2DE80EC2E58F654005249D4 /* ToDoListViewModel.swift in Sources */,
 				E2DE80F82E58FCFE005249D4 /* Endpoint.swift in Sources */,
 				E2DE80E52E58F587005249D4 /* AppCoordinator.swift in Sources */,
-				E2FEDBAB2E5CB16800BF20F4 /* AddTaskViewModel.swift in Sources */,
 				E2D25B7E2E59CD5D0054E236 /* CoreDataManager.swift in Sources */,
 				E2FEDBA62E5C992E00BF20F4 /* ActionPopupPresenter.swift in Sources */,
 				E2DE80E82E58F602005249D4 /* ToDoListCoordinator.swift in Sources */,

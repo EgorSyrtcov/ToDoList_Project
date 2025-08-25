@@ -67,7 +67,6 @@ final class ToDoListViewController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     private var toDoList: ToDoList?
     private var filteredTodos: [Todo] = []
-    private var searchQuery: String = ""
     
     
     override func viewDidLoad() {
@@ -110,11 +109,20 @@ final class ToDoListViewController: UIViewController {
     }
     
     private func viewModelBinding() {
+        
+        viewModel.filteredTodosPublisher
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] filteredTodos in
+                        self?.filteredTodos = filteredTodos
+                        self?.tableView.reloadData()
+                        self?.updateCountLabel()
+                    }
+                    .store(in: &cancellables)
+        
         viewModel.toDoListPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] toDoList in
                 self?.toDoList = toDoList
-                self?.updateFilteredTodos()
                 self?.tableView.reloadData()
                 self?.updateCountLabel()
             }
@@ -130,21 +138,6 @@ final class ToDoListViewController: UIViewController {
                 self.showAlert(title: error, subtitle: "")
             }
             .store(in: &cancellables)
-    }
-    
-    private func updateFilteredTodos() {
-        guard let toDoList = toDoList else {
-            filteredTodos = []
-            return
-        }
-        
-        if searchQuery.isEmpty {
-            filteredTodos = toDoList.todos
-        } else {
-            filteredTodos = toDoList.todos.filter { todo in
-                todo.todo.localizedCaseInsensitiveContains(searchQuery)
-            }
-        }
     }
     
     private func updateCountLabel() {
@@ -200,10 +193,7 @@ extension ToDoListViewController: UITableViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ToDoListViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchQuery = searchText
-        updateFilteredTodos()
-        tableView.reloadData()
-        updateCountLabel()
+        viewModel.updateSearchQuery(searchText)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

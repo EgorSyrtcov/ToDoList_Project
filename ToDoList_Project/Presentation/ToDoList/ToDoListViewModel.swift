@@ -6,12 +6,15 @@ struct ToDoListRouting {}
 protocol ToDoListInput {
     func toggleTaskCompletion(_ task: Todo)
     func deleteTaskCompletion(_ task: Todo)
+    func updateSearchQuery(_ query: String)
+    func updateFilteredTodos()
 }
 
 protocol ToDoListOutput {
     var toDoListPublisher: AnyPublisher<ToDoList?, Never> { get }
     var errorPublisher: AnyPublisher<String, Never> { get }
     var isLoadingPublisher: AnyPublisher<Bool, Never> { get }
+    var filteredTodosPublisher: AnyPublisher<[Todo], Never> { get }
 }
 
 typealias ToDoListVMInterface = ToDoListInput & ToDoListOutput
@@ -24,6 +27,8 @@ final class ToDoListViewModel: ToDoListVMInterface {
     private var routing: ToDoListRouting
     private var cancellables: Set<AnyCancellable> = []
     private let taskService = TaskService()
+    private var searchQuery: String = ""
+    private var filteredTodos: [Todo] = []
     
     // MARK: - Data
     private var currentToDoList: ToDoList?
@@ -34,6 +39,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
     private let toDoListSubject = PassthroughSubject<ToDoList?, Never>()
     private let errorSubject = PassthroughSubject<String, Never>()
     private let isLoadingSubject = CurrentValueSubject<Bool, Never>(false)
+    private let filteredTodosSubject = PassthroughSubject<[Todo], Never>()
     
     
     var toDoListPublisher: AnyPublisher<ToDoList?, Never> {
@@ -46,6 +52,10 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     var isLoadingPublisher: AnyPublisher<Bool, Never> {
         isLoadingSubject.eraseToAnyPublisher()
+    }
+    
+    var filteredTodosPublisher: AnyPublisher<[Todo], Never> {
+        filteredTodosSubject.eraseToAnyPublisher()
     }
     
     // MARK: - Initialization
@@ -76,6 +86,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
             
             DispatchQueue.main.async {
                 self.toDoListSubject.send(toDoList)
+                self.updateFilteredTodos()
             }
             
             print("🔄 Статус задачи изменен: \(toDoList.todos[index].todo) - \(toDoList.todos[index].completed ? "выполнена" : "не выполнена")")
@@ -93,10 +104,33 @@ final class ToDoListViewModel: ToDoListVMInterface {
                                        skip: 0,
                                        limit: updatedTasks.count)
         currentToDoList = updatedToDoList
-    
+        
         DispatchQueue.main.async {
             self.toDoListSubject.send(updatedToDoList)
+            self.updateFilteredTodos()
         }
+    }
+    
+    func updateSearchQuery(_ query: String) {
+        searchQuery = query
+        updateFilteredTodos()
+    }
+    
+    func updateFilteredTodos() {
+        guard let toDoList = currentToDoList else {
+            filteredTodos = []
+            filteredTodosSubject.send(filteredTodos)
+            return
+        }
+        
+        if searchQuery.isEmpty {
+            filteredTodos = toDoList.todos
+        } else {
+            filteredTodos = toDoList.todos.filter { todo in
+                todo.todo.localizedCaseInsensitiveContains(searchQuery)
+            }
+        }
+        filteredTodosSubject.send(filteredTodos)
     }
     
     private func requestToDoLists() async {
@@ -121,6 +155,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
                 currentToDoList = toDoList
                 DispatchQueue.main.async {
                     self.toDoListSubject.send(toDoList)
+                    self.updateFilteredTodos()
                 }
             } else {
                 // Если есть локальные данные, используем их
@@ -133,6 +168,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
                 
                 DispatchQueue.main.async {
                     self.toDoListSubject.send(toDoList)
+                    self.updateFilteredTodos()
                 }
             }
             
