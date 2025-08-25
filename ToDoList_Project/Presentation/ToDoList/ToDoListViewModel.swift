@@ -5,6 +5,7 @@ struct ToDoListRouting {}
 
 protocol ToDoListInput {
     func toggleTaskCompletion(_ task: Todo)
+    func deleteTaskCompletion(_ task: Todo)
 }
 
 protocol ToDoListOutput {
@@ -22,7 +23,6 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     private var routing: ToDoListRouting
     private var cancellables: Set<AnyCancellable> = []
-    private let service = Service()
     private let taskService = TaskService()
     
     // MARK: - Data
@@ -53,36 +53,51 @@ final class ToDoListViewModel: ToDoListVMInterface {
     init(routing: ToDoListRouting) {
         self.routing = routing
         configureBindings()
-        
-        Task { await requestToDoLists() }
     }
     
-    private func configureBindings() {}
+    private func configureBindings() {
+        Task { await requestToDoLists() }
+    }
     
     // MARK: - Input
     
     func toggleTaskCompletion(_ task: Todo) {
-            guard var toDoList = currentToDoList else {
-                print("❌ currentToDoList is nil")
-                return
+        guard var toDoList = currentToDoList else {
+            print("❌ currentToDoList is nil")
+            return
+        }
+        
+        if let index = toDoList.todos.firstIndex(where: { $0.id == task.id }) {
+            toDoList.todos[index].completed.toggle()
+            currentToDoList = toDoList
+            
+            // Сохраняем изменения в CoreData
+            taskService.updateTaskLocally(toDoList.todos[index])
+            
+            DispatchQueue.main.async {
+                self.toDoListSubject.send(toDoList)
             }
             
-            if let index = toDoList.todos.firstIndex(where: { $0.id == task.id }) {
-                toDoList.todos[index].completed.toggle()
-                currentToDoList = toDoList
-                
-                // Сохраняем изменения в CoreData
-                taskService.updateTaskLocally(toDoList.todos[index])
-                
-                DispatchQueue.main.async {
-                    self.toDoListSubject.send(toDoList)
-                }
-                
-                print("🔄 Статус задачи изменен: \(toDoList.todos[index].todo) - \(toDoList.todos[index].completed ? "выполнена" : "не выполнена")")
-            } else {
-                print("❌ Задача с ID \(task.id) не найдена в списке")
-            }
+            print("🔄 Статус задачи изменен: \(toDoList.todos[index].todo) - \(toDoList.todos[index].completed ? "выполнена" : "не выполнена")")
+        } else {
+            print("❌ Задача с ID \(task.id) не найдена в списке")
         }
+    }
+    
+    func deleteTaskCompletion(_ task: Todo) {
+        taskService.deleteTaskLocally(task)
+        
+        let updatedTasks = taskService.getLocalTasks()
+        let updatedToDoList = ToDoList(todos: updatedTasks,
+                                       total: updatedTasks.count,
+                                       skip: 0,
+                                       limit: updatedTasks.count)
+        currentToDoList = updatedToDoList
+    
+        DispatchQueue.main.async {
+            self.toDoListSubject.send(updatedToDoList)
+        }
+    }
     
     private func requestToDoLists() async {
         isLoadingSubject.send(true)

@@ -261,7 +261,7 @@ extension ToDoListViewController {
         let actions = ActionsPopupView(
             onEdit: { [weak self] in self?.hideActionPopup(); print("Редактировать") },
             onShare: { [weak self] in self?.hideActionPopup(); self?.share(todo: todo) },
-            onDelete: { [weak self] in self?.hideActionPopup(); print("Удалить") }
+            onDelete: { [weak self] in self?.hideActionPopup(); self?.delete(todo: todo) }
         )
         view.addSubview(actions)
         self.actionsContainer = actions
@@ -299,5 +299,9 @@ extension ToDoListViewController {
         let text = todo.todo
         let vc = UIActivityViewController(activityItems: [text], applicationActivities: nil)
         present(vc, animated: true)
+    }
+    
+    private func delete(todo: Todo) {
+        viewModel.deleteTaskCompletion(todo)
     }
 }
