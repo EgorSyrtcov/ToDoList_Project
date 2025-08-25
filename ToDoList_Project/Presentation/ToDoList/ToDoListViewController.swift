@@ -80,7 +80,6 @@ final class ToDoListViewController: UIViewController {
     
     private func setup() {
         view.backgroundColor = .black
-        title = "Задачи"
         updateCountLabel()
     }
     
@@ -192,6 +191,10 @@ extension ToDoListViewController: UITableViewDelegate {
         // При нажатии на ячейку меняем статус задачи
         viewModel.toggleTaskCompletion(todo)
     }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        view.endEditing(true)
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -204,6 +207,10 @@ extension ToDoListViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
 }
