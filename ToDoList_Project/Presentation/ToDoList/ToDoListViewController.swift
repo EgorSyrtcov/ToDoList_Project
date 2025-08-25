@@ -41,14 +41,34 @@ final class ToDoListViewController: UIViewController {
         return searchBar
     }()
     
-    private lazy var addButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(addButtonTapped)
-        )
-        button.tintColor = .white
+    private lazy var bottomBarView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+        return v
+    }()
+    
+    private lazy var addTaskButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        if let img = UIImage(systemName: "square.and.pencil") {
+            button.setImage(img, for: .normal)
+        } else {
+            button.setTitle("+", for: .normal)
+        }
+        button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var countLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        label.text = "0 Задач"
+        return label
     }()
     
     private lazy var titleLabel: UILabel = {
@@ -81,11 +101,12 @@ final class ToDoListViewController: UIViewController {
     private func setup() {
         view.backgroundColor = .black
         title = "Задачи"
-        navigationItem.rightBarButtonItem = addButton
+        updateCountLabel()
     }
     
     private func setupUI() {
-        view.addSubviews(searchBar, tableView, activityIndicator, titleLabel)
+        view.addSubviews(searchBar, tableView, activityIndicator, titleLabel, bottomBarView)
+        bottomBarView.addSubviews(countLabel, addTaskButton)
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
@@ -99,7 +120,20 @@ final class ToDoListViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: bottomBarView.topAnchor),
+            
+            bottomBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bottomBarView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            bottomBarView.heightAnchor.constraint(equalToConstant: 83 + view.safeAreaInsets.bottom),
+            
+            addTaskButton.trailingAnchor.constraint(equalTo: bottomBarView.trailingAnchor, constant: -16),
+            addTaskButton.topAnchor.constraint(equalTo: bottomBarView.topAnchor, constant: 13),
+            addTaskButton.widthAnchor.constraint(equalToConstant: 28),
+            addTaskButton.heightAnchor.constraint(equalToConstant: 28),
+            
+            countLabel.centerXAnchor.constraint(equalTo: bottomBarView.centerXAnchor),
+            countLabel.centerYAnchor.constraint(equalTo: addTaskButton.centerYAnchor),
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -113,6 +147,7 @@ final class ToDoListViewController: UIViewController {
                 self?.toDoList = toDoList
                 self?.updateFilteredTodos()
                 self?.tableView.reloadData()
+                self?.updateCountLabel()
             }
             .store(in: &cancellables)
         
@@ -143,6 +178,11 @@ final class ToDoListViewController: UIViewController {
         }
     }
     
+    private func updateCountLabel() {
+        let remaining = toDoList?.todos.filter { !$0.completed }.count ?? 0
+        countLabel.text = "\(remaining) Задач"
+    }
+    
     @objc private func addButtonTapped() {
         // логика добавления новой задачи
         print("➕ Добавить новую задачу")
@@ -161,8 +201,8 @@ extension ToDoListViewController: UITableViewDataSource {
         let todo = filteredTodos[indexPath.row]
         cell.configure(with: todo)
         cell.onCheckboxTapped = { [weak self] updatedTodo in
-            
             self?.viewModel.toggleTaskCompletion(updatedTodo)
+            self?.updateCountLabel()
         }
         
         return cell
@@ -178,14 +218,6 @@ extension ToDoListViewController: UITableViewDelegate {
         // При нажатии на ячейку меняем статус задачи
         viewModel.toggleTaskCompletion(todo)
     }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let todo = filteredTodos[indexPath.row]
-            // Здесь будет логика удаления задачи
-            print("🗑️ Удалить задачу: \(todo.todo)")
-        }
-    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -194,6 +226,7 @@ extension ToDoListViewController: UISearchBarDelegate {
         searchQuery = searchText
         updateFilteredTodos()
         tableView.reloadData()
+        updateCountLabel()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

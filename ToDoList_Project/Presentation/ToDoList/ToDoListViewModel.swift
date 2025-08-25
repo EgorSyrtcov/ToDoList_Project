@@ -99,7 +99,10 @@ final class ToDoListViewModel: ToDoListVMInterface {
                 let apiTasks = try await taskService.fetchTasksFromAPI()
                 taskService.saveTasksLocally(apiTasks)
                 
-                let toDoList = ToDoList(todos: apiTasks, total: apiTasks.count, skip: 0, limit: apiTasks.count)
+                let toDoList = ToDoList(todos: apiTasks,
+                                        total: apiTasks.count,
+                                        skip: 0,
+                                        limit: apiTasks.count)
                 currentToDoList = toDoList
                 DispatchQueue.main.async {
                     self.toDoListSubject.send(toDoList)
@@ -107,7 +110,10 @@ final class ToDoListViewModel: ToDoListVMInterface {
             } else {
                 // Если есть локальные данные, используем их
                 print("📱 Загружены локальные данные: \(localTasks.count) задач")
-                let toDoList = ToDoList(todos: localTasks, total: localTasks.count, skip: 0, limit: localTasks.count)
+                let toDoList = ToDoList(todos: localTasks,
+                                        total: localTasks.count,
+                                        skip: 0,
+                                        limit: localTasks.count)
                 currentToDoList = toDoList
                 
                 DispatchQueue.main.async {
