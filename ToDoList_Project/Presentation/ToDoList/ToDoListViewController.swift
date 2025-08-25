@@ -41,34 +41,10 @@ final class ToDoListViewController: UIViewController {
         return searchBar
     }()
     
-    private lazy var bottomBarView: UIView = {
-        let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
-        v.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+    private lazy var bottomBarView: BottomBarView = {
+        let v = BottomBarView()
+        v.onAddTapped = { [weak self] in self?.addButtonTapped() }
         return v
-    }()
-    
-    private lazy var addTaskButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        if let img = UIImage(systemName: "square.and.pencil") {
-            button.setImage(img, for: .normal)
-        } else {
-            button.setTitle("+", for: .normal)
-        }
-        button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
-        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var countLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        label.text = "0 Задач"
-        return label
     }()
     
     private lazy var titleLabel: UILabel = {
@@ -79,6 +55,10 @@ final class ToDoListViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    private var blurView: UIVisualEffectView?
+    private var previewContainer: UIView?
+    private var actionsContainer: UIView?
     
     // MARK: Public
     var viewModel: ToDoListVMInterface!
@@ -106,7 +86,6 @@ final class ToDoListViewController: UIViewController {
     
     private func setupUI() {
         view.addSubviews(searchBar, tableView, activityIndicator, titleLabel, bottomBarView)
-        bottomBarView.addSubviews(countLabel, addTaskButton)
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
@@ -125,15 +104,6 @@ final class ToDoListViewController: UIViewController {
             bottomBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomBarView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            bottomBarView.heightAnchor.constraint(equalToConstant: 83 + view.safeAreaInsets.bottom),
-            
-            addTaskButton.trailingAnchor.constraint(equalTo: bottomBarView.trailingAnchor, constant: -16),
-            addTaskButton.topAnchor.constraint(equalTo: bottomBarView.topAnchor, constant: 13),
-            addTaskButton.widthAnchor.constraint(equalToConstant: 28),
-            addTaskButton.heightAnchor.constraint(equalToConstant: 28),
-            
-            countLabel.centerXAnchor.constraint(equalTo: bottomBarView.centerXAnchor),
-            countLabel.centerYAnchor.constraint(equalTo: addTaskButton.centerYAnchor),
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -180,7 +150,7 @@ final class ToDoListViewController: UIViewController {
     
     private func updateCountLabel() {
         let remaining = toDoList?.todos.filter { !$0.completed }.count ?? 0
-        countLabel.text = "\(remaining) Задач"
+        bottomBarView.updateCount(remaining)
     }
     
     @objc private func addButtonTapped() {
@@ -205,8 +175,8 @@ extension ToDoListViewController: UITableViewDataSource {
             self?.updateCountLabel()
         }
         
-        cell.onLongPress = { longPressedTodo in
-            print("📌 Долгое нажатие на задачу: \(longPressedTodo.todo)")
+        cell.onLongPress = { [weak self] longPressedTodo in
+            self?.showActionPopup(for: longPressedTodo)
         }
         
         return cell
@@ -261,5 +231,66 @@ extension ToDoListViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in completion?() }))
             self.present(alert, animated: true)
         }
+    }
+    
+    private func showActionPopup(for todo: Todo) {
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blur.translatesAutoresizingMaskIntoConstraints = false
+        blur.alpha = 0.0
+        view.addSubview(blur)
+        NSLayoutConstraint.activate([
+            blur.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blur.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blur.topAnchor.constraint(equalTo: view.topAnchor),
+            blur.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        self.blurView = blur
+
+        let preview = TaskPreviewView()
+        preview.configure(with: todo)
+        view.addSubview(preview)
+        self.previewContainer = preview
+
+        let actions = ActionsPopupView(
+            onEdit: { [weak self] in self?.hideActionPopup(); print("Редактировать") },
+            onShare: { [weak self] in self?.hideActionPopup(); self?.share(todo: todo) },
+            onDelete: { [weak self] in self?.hideActionPopup(); print("Удалить") }
+        )
+        view.addSubview(actions)
+        self.actionsContainer = actions
+
+        NSLayoutConstraint.activate([
+            preview.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            preview.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            preview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+
+            actions.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            actions.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            actions.topAnchor.constraint(equalTo: preview.bottomAnchor, constant: 16)
+        ])
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(hideActionPopup))
+        blur.addGestureRecognizer(tap)
+        UIView.animate(withDuration: 0.2) { blur.alpha = 1.0 }
+    }
+    
+    // ToDoListViewController.swift — скрытие и share
+    @objc private func hideActionPopup() {
+        UIView.animate(withDuration: 0.2, animations: {
+            self.blurView?.alpha = 0.0
+        }, completion: { _ in
+            self.blurView?.removeFromSuperview()
+            self.previewContainer?.removeFromSuperview()
+            self.actionsContainer?.removeFromSuperview()
+            self.blurView = nil
+            self.previewContainer = nil
+            self.actionsContainer = nil
+        })
+    }
+
+    private func share(todo: Todo) {
+        let text = todo.todo
+        let vc = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        present(vc, animated: true)
     }
 }

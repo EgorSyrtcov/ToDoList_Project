@@ -28,6 +28,10 @@
 		E2DE80F42E58FCAC005249D4 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80F32E58FCAC005249D4 /* Service.swift */; };
 		E2DE80F62E58FCD8005249D4 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80F52E58FCD8005249D4 /* Request.swift */; };
 		E2DE80F82E58FCFE005249D4 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80F72E58FCFE005249D4 /* Endpoint.swift */; };
+		E2FEDBA02E5C983000BF20F4 /* ActionsPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDB9F2E5C983000BF20F4 /* ActionsPopupView.swift */; };
+		E2FEDBA22E5C985100BF20F4 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA12E5C985100BF20F4 /* BottomBarView.swift */; };
+		E2FEDBA42E5C988500BF20F4 /* TaskPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA32E5C988500BF20F4 /* TaskPreviewView.swift */; };
+		E2FEDBA62E5C992E00BF20F4 /* ActionPopupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEDBA52E5C992E00BF20F4 /* ActionPopupPresenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +58,10 @@
 		E2DE80F32E58FCAC005249D4 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		E2DE80F52E58FCD8005249D4 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		E2DE80F72E58FCFE005249D4 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		E2FEDB9F2E5C983000BF20F4 /* ActionsPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionsPopupView.swift; sourceTree = "<group>"; };
+		E2FEDBA12E5C985100BF20F4 /* BottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
+		E2FEDBA32E5C988500BF20F4 /* TaskPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskPreviewView.swift; sourceTree = "<group>"; };
+		E2FEDBA52E5C992E00BF20F4 /* ActionPopupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActionPopupPresenter.swift; path = ../ActionPopupPresenter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +104,6 @@
 		E2DE80C52E58F438005249D4 /* ToDoList_Project */ = {
 			isa = PBXGroup;
 			children = (
-				E2DE80E12E58F4E4005249D4 /* Views */,
 				E2DE80E02E58F4DA005249D4 /* Base */,
 				E2DE80DF2E58F4CA005249D4 /* Extention */,
 				E2DE80DE2E58F4BB005249D4 /* Helpers */,
@@ -174,22 +181,27 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
-		E2DE80E12E58F4E4005249D4 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		E2DE80E62E58F5E3005249D4 /* ToDoList */ = {
 			isa = PBXGroup;
 			children = (
+				E2FEDBA52E5C992E00BF20F4 /* ActionPopupPresenter.swift */,
+				E2FEDB9E2E5C97DA00BF20F4 /* ToDoListViews */,
 				E2DE80E92E58F654005249D4 /* ToDoListViewController.swift */,
 				E2DE80EA2E58F654005249D4 /* ToDoListViewModel.swift */,
 				E2D25B7F2E59CDC90054E236 /* TaskService.swift */,
 				E2D25B752E59C2B80054E236 /* TaskTableViewCell.swift */,
 			);
 			path = ToDoList;
+			sourceTree = "<group>";
+		};
+		E2FEDB9E2E5C97DA00BF20F4 /* ToDoListViews */ = {
+			isa = PBXGroup;
+			children = (
+				E2FEDB9F2E5C983000BF20F4 /* ActionsPopupView.swift */,
+				E2FEDBA12E5C985100BF20F4 /* BottomBarView.swift */,
+				E2FEDBA32E5C988500BF20F4 /* TaskPreviewView.swift */,
+			);
+			path = ToDoListViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,11 +282,15 @@
 				E2DE80F82E58FCFE005249D4 /* Endpoint.swift in Sources */,
 				E2DE80E52E58F587005249D4 /* AppCoordinator.swift in Sources */,
 				E2D25B7E2E59CD5D0054E236 /* CoreDataManager.swift in Sources */,
+				E2FEDBA62E5C992E00BF20F4 /* ActionPopupPresenter.swift in Sources */,
 				E2DE80E82E58F602005249D4 /* ToDoListCoordinator.swift in Sources */,
 				E2DE80C72E58F438005249D4 /* AppDelegate.swift in Sources */,
 				E2D25B7C2E59CB610054E236 /* TaskEntity.xcdatamodeld in Sources */,
 				E2D25B762E59C2B80054E236 /* TaskTableViewCell.swift in Sources */,
+				E2FEDBA42E5C988500BF20F4 /* TaskPreviewView.swift in Sources */,
+				E2FEDBA22E5C985100BF20F4 /* BottomBarView.swift in Sources */,
 				E2D25B722E5991770054E236 /* ToDoList.swift in Sources */,
+				E2FEDBA02E5C983000BF20F4 /* ActionsPopupView.swift in Sources */,
 				E2DE80F22E58F9A1005249D4 /* UITableViewCell.swift in Sources */,
 				E2DE80F02E58F97F005249D4 /* UITableView.swift in Sources */,
 				E2DE80C92E58F438005249D4 /* SceneDelegate.swift in Sources */,
