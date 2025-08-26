@@ -9,7 +9,7 @@ struct ToDoList: Codable {
 // MARK: - Todo
 struct Todo: Codable {
     let id: Int
-    let todo: String
+    var todo: String
     var completed: Bool
     let userID: Int
 

@@ -3,10 +3,12 @@ import Combine
 
 struct ToDoListRouting {
     let addTaskButtonDidTapSubject = PassthroughSubject<Void, Never>()
+    let editTaskButtonDidTapSubject = PassthroughSubject<Todo, Never>()
 }
 
 protocol ToDoListInput {
     var addTaskDidTapSubject: PassthroughSubject<Void, Never> { get }
+    var editTaskDidTapSubject: PassthroughSubject<Todo, Never> { get }
     func toggleTaskCompletion(_ task: Todo)
     func deleteTaskCompletion(_ task: Todo)
     func updateSearchQuery(_ query: String)
@@ -39,6 +41,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     // MARK: - Input
     var addTaskDidTapSubject = PassthroughSubject<Void, Never>()
+    var editTaskDidTapSubject = PassthroughSubject<Todo, Never>()
     
     // MARK: - Output Publishers
     private let toDoListSubject = PassthroughSubject<ToDoList?, Never>()
@@ -76,6 +79,12 @@ final class ToDoListViewModel: ToDoListVMInterface {
         addTaskDidTapSubject
             .sink { [weak self] _ in
                 self?.routing.addTaskButtonDidTapSubject.send()
+            }
+            .store(in: &cancellables)
+        
+        editTaskDidTapSubject
+            .sink { [weak self] task in
+                self?.routing.editTaskButtonDidTapSubject.send(task)
             }
             .store(in: &cancellables)
     }

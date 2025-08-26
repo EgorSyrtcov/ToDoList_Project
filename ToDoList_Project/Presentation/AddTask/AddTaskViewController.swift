@@ -82,9 +82,13 @@ final class AddTaskViewController: UIViewController {
         view.backgroundColor = .black
         setupNavigationBar()
         setupKeyboardObservers()
+        populateDataIfEditing()
     }
     
     private func setupNavigationBar() {
+        // Устанавливаем заголовок в зависимости от режима
+        title = viewModel.isEditingMode ? "Редактировать задачу" : "Новая задача"
+        
         let backButton = UIBarButtonItem()
         backButton.title = "Назад"
         backButton.tintColor = .yellow
@@ -105,13 +109,15 @@ final class AddTaskViewController: UIViewController {
             .store(in: &cancellables)
         
         viewModel.successPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] success in
-                if success {
-                    self?.showSuccessAlert()
-                }
-            }
-            .store(in: &cancellables)
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] success in
+                        if success {
+                            let message = self?.viewModel.isEditingMode == true ?
+                                "Задача обновлена" : "Задача добавлена"
+                            self?.showSuccessAlert(message: message)
+                        }
+                    }
+                    .store(in: &cancellables)
     }
     
     private func setupUI() {
@@ -153,25 +159,29 @@ final class AddTaskViewController: UIViewController {
             saveButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
         
-        // Настройка placeholder для TextView
-        descriptionTextView.delegate = self
-        descriptionTextView.text = "Описание задачи (необязательно)"
-        descriptionTextView.textColor = .lightGray
+        // Настройка placeholder для TextView только если не в режиме редактирования
+                if !viewModel.isEditingMode {
+                    descriptionTextView.delegate = self
+                    descriptionTextView.text = "Описание задачи (необязательно)"
+                    descriptionTextView.textColor = .lightGray
+                }
+                
+                dateLabel.text = formattedCurrentDate()
     }
     
     // MARK: - Actions
     @objc private func saveButtonTapped() {
-        guard let title = titleTextField.text, !title.trimmingCharacters(in: .whitespaces).isEmpty else {
-            showErrorAlert(message: "Введите название задачи")
-            return
+            guard let title = titleTextField.text, !title.trimmingCharacters(in: .whitespaces).isEmpty else {
+                showErrorAlert(message: "Введите название задачи")
+                return
+            }
+            
+            let description = descriptionTextView.textColor == .lightGray ? "" : descriptionTextView.text
+            viewModel.saveTask(
+                title: title,
+                description: description ?? ""
+            )
         }
-        
-        let description = descriptionTextView.textColor == .lightGray ? "" : descriptionTextView.text
-        viewModel.saveTask(
-            title: title,
-            description: description ?? ""
-        )
-    }
     
     @objc private func keyboardWillShow(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
@@ -187,18 +197,18 @@ final class AddTaskViewController: UIViewController {
     
     // MARK: - Alert Methods
     private func showErrorAlert(message: String) {
-        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
+           let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default))
+           present(alert, animated: true)
+       }
     
-    private func showSuccessAlert() {
-        let alert = UIAlertController(title: "Успешно", message: "Задача добавлена", preferredStyle: .alert)
-        present(alert, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            alert.dismiss(animated: true)
-        }
-    }
+    private func showSuccessAlert(message: String) {
+           let alert = UIAlertController(title: "Успешно", message: message, preferredStyle: .alert)
+           present(alert, animated: true)
+           DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+               alert.dismiss(animated: true)
+           }
+       }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
@@ -235,6 +245,21 @@ extension AddTaskViewController: UITextViewDelegate {
 }
 
 extension AddTaskViewController {
+    
+    private func populateDataIfEditing() {
+            guard let task = viewModel.taskForEditing else { return }
+            
+            // Заполняем поля данными задачи
+            titleTextField.text = task.todo
+            descriptionTextView.text = "Описание задачи" // Замените на реальное поле description если есть
+            descriptionTextView.textColor = .white
+            
+            // Обновляем дату если нужно
+            dateLabel.text = formattedCurrentDate()
+            
+            // Меняем текст кнопки для режима редактирования
+            saveButton.setTitle("Сохранить изменения", for: .normal)
+        }
     
     private func formattedCurrentDate() -> String {
         let dateFormatter = DateFormatter()
