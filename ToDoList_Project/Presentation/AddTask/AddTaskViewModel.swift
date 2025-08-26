@@ -40,7 +40,6 @@ final class AddTaskViewModel: AddTaskVMInterface {
     // MARK: - Output Publishers
     private let errorSubject = PassthroughSubject<String, Never>()
     private let successSubject = PassthroughSubject<Bool, Never>()
-    private let taskForEditingSubject = CurrentValueSubject<Todo?, Never>(nil)
     
     var errorPublisher: AnyPublisher<String, Never> {
         errorSubject.eraseToAnyPublisher()

@@ -102,50 +102,6 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(todo?.userID, 1)
     }
     
-    // MARK: - LocalTask Model Tests
-    
-    func testLocalTaskInitialization() {
-        // Given
-        let title = "Local Task"
-        let description = "Local Description"
-        
-        // When
-        let localTask = LocalTask(title: title, description: description)
-        
-        // Then
-        XCTAssertNotNil(localTask.id)
-        XCTAssertEqual(localTask.title, title)
-        XCTAssertEqual(localTask.description, description)
-        XCTAssertNotNil(localTask.createdAt)
-        XCTAssertFalse(localTask.isCompleted)
-    }
-    
-    func testLocalTaskFromTodoConversion() {
-        // Given
-        let todo = Todo(id: 1, todo: "Test Task", description: "Test Description", completed: true, userID: 1)
-        
-        // When
-        let localTask = LocalTask(from: todo)
-        
-        // Then
-        XCTAssertNotNil(localTask.id)
-        XCTAssertEqual(localTask.title, todo.todo)
-        XCTAssertEqual(localTask.description, todo.description)
-        XCTAssertNotNil(localTask.createdAt)
-        XCTAssertEqual(localTask.isCompleted, todo.completed)
-    }
-    
-    func testLocalTaskFromTodoConversionWithEmptyDescription() {
-        // Given
-        let todo = Todo(id: 1, todo: "Test Task", description: "", completed: false, userID: 1)
-        
-        // When
-        let localTask = LocalTask(from: todo)
-        
-        // Then
-        XCTAssertEqual(localTask.description, "")
-    }
-    
     // MARK: - ToDoList Model Tests
     
     func testToDoListInitialization() {
