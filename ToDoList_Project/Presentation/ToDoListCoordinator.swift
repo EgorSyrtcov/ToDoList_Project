@@ -30,7 +30,7 @@ final class ToDoListCoordinator: Coordinator {
             }.store(in: &cancellables)
     }
     
-    private func showAddTaskViewController(task: Todo?) {
+    internal func showAddTaskViewController(task: Todo?) {
         let addTaskRouting = AddTaskRouting()
         
         addTaskRouting.onDismissTapSubject

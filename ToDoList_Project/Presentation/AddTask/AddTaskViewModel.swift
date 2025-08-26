@@ -23,7 +23,7 @@ typealias AddTaskVMInterface = AddTaskInput & AddTaskOutput
 final class AddTaskViewModel: AddTaskVMInterface {
     
     // MARK: - Private Properties
-    private var routing: AddTaskRouting
+    internal var routing: AddTaskRouting
     private var cancellables: Set<AnyCancellable> = []
     private let taskService = TaskService()
     private var editingTask: Todo?

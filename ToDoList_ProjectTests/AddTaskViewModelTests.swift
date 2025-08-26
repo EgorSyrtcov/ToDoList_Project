@@ -71,7 +71,7 @@ class AddTaskViewModelTests: XCTestCase {
     
     func testEditExistingTask() {
         // Given
-        let existingTask = Todo(id: 1, todo: "Old Title", completed: false, userID: 1)
+        let existingTask = Todo(id: 1, todo: "Old Title", description: "Old Description", completed: false, userID: 1)
         mockTaskService.tasks = [existingTask]
         viewModel.setTaskForEditing(existingTask)
         
@@ -98,7 +98,7 @@ class AddTaskViewModelTests: XCTestCase {
     
     func testIsEditingMode() {
         // Given
-        let task = Todo(id: 1, todo: "Test Task", completed: false, userID: 1)
+        let task = Todo(id: 1, todo: "Test Task", description: "Test Description", completed: false, userID: 1)
         
         // When
         viewModel.setTaskForEditing(task)

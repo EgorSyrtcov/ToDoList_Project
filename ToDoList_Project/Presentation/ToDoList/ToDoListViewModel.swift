@@ -30,7 +30,7 @@ final class ToDoListViewModel: ToDoListVMInterface {
     
     // MARK: - Private Properties
     
-    private var routing: ToDoListRouting
+    internal var routing: ToDoListRouting
     private var cancellables: Set<AnyCancellable> = []
     private let taskService = TaskService()
     private var searchQuery: String = ""

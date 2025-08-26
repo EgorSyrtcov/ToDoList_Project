@@ -18,7 +18,7 @@ class CoreDataManagerTests: XCTestCase {
     
     func testAddTask() {
         // Given
-        let task = Todo(id: 1, todo: "Test Task", completed: false, userID: 1)
+        let task = Todo(id: 1, todo: "Test Task", description: "Test Description", completed: false, userID: 1)
         
         // When
         coreDataManager.addTask(task)
@@ -26,13 +26,14 @@ class CoreDataManagerTests: XCTestCase {
         // Then
         XCTAssertEqual(coreDataManager.tasks.count, 1)
         XCTAssertEqual(coreDataManager.tasks.first?.todo, "Test Task")
+        XCTAssertEqual(coreDataManager.tasks.first?.description, "Test Description")
     }
     
     func testFetchTasks() {
         // Given
         let tasks = [
-            Todo(id: 1, todo: "Task 1", completed: false, userID: 1),
-            Todo(id: 2, todo: "Task 2", completed: true, userID: 1)
+            Todo(id: 1, todo: "Task 1", description: "Description 1", completed: false, userID: 1),
+            Todo(id: 2, todo: "Task 2", description: "Description 2", completed: true, userID: 1)
         ]
         coreDataManager.tasks = tasks
         
@@ -47,22 +48,24 @@ class CoreDataManagerTests: XCTestCase {
     
     func testUpdateTask() {
         // Given
-        var task = Todo(id: 1, todo: "Original", completed: false, userID: 1)
+        var task = Todo(id: 1, todo: "Original", description: "Original Description", completed: false, userID: 1)
         coreDataManager.tasks = [task]
         
         // When
         task.todo = "Updated"
+        task.description = "Updated Description"
         task.completed = true
         coreDataManager.updateTask(task)
         
         // Then
         XCTAssertEqual(coreDataManager.tasks.first?.todo, "Updated")
+        XCTAssertEqual(coreDataManager.tasks.first?.description, "Updated Description")
         XCTAssertTrue(coreDataManager.tasks.first?.completed ?? false)
     }
     
     func testDeleteTask() {
         // Given
-        let task = Todo(id: 1, todo: "To Delete", completed: false, userID: 1)
+        let task = Todo(id: 1, todo: "To Delete", description: "Delete Description", completed: false, userID: 1)
         coreDataManager.tasks = [task]
         
         // When
@@ -75,8 +78,8 @@ class CoreDataManagerTests: XCTestCase {
     func testGetMaxTaskId() {
         // Given
         let tasks = [
-            Todo(id: 5, todo: "Task 1", completed: false, userID: 1),
-            Todo(id: 10, todo: "Task 2", completed: true, userID: 1)
+            Todo(id: 5, todo: "Task 1", description: "Description 1", completed: false, userID: 1),
+            Todo(id: 10, todo: "Task 2", description: "Description 2", completed: true, userID: 1)
         ]
         coreDataManager.tasks = tasks
         

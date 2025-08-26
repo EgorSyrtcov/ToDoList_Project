@@ -28,16 +28,18 @@ class TaskServiceTests: XCTestCase {
         
         // Then
         XCTAssertEqual(newTask.todo, "Test Task")
+        XCTAssertEqual(newTask.description, "Test Description")
         XCTAssertFalse(newTask.completed)
         XCTAssertEqual(mockCoreDataManager.tasks.count, 1)
         XCTAssertEqual(mockCoreDataManager.tasks.first?.todo, "Test Task")
+        XCTAssertEqual(mockCoreDataManager.tasks.first?.description, "Test Description")
     }
     
     func testGetLocalTasks() {
         // Given
         let testTasks = [
-            Todo(id: 1, todo: "Task 1", completed: false, userID: 1),
-            Todo(id: 2, todo: "Task 2", completed: true, userID: 1)
+            Todo(id: 1, todo: "Task 1", description: "Description 1", completed: false, userID: 1),
+            Todo(id: 2, todo: "Task 2", description: "Description 2", completed: true, userID: 1)
         ]
         mockCoreDataManager.tasks = testTasks
         
@@ -52,22 +54,24 @@ class TaskServiceTests: XCTestCase {
     
     func testUpdateTaskLocally() {
         // Given
-        var task = Todo(id: 1, todo: "Original", completed: false, userID: 1)
+        var task = Todo(id: 1, todo: "Original", description: "Original Description", completed: false, userID: 1)
         mockCoreDataManager.tasks = [task]
         
         // When
         task.completed = true
         task.todo = "Updated"
+        task.description = "Updated Description"
         taskService.updateTaskLocally(task)
         
         // Then
         XCTAssertEqual(mockCoreDataManager.tasks.first?.completed, true)
         XCTAssertEqual(mockCoreDataManager.tasks.first?.todo, "Updated")
+        XCTAssertEqual(mockCoreDataManager.tasks.first?.description, "Updated Description")
     }
     
     func testDeleteTaskLocally() {
         // Given
-        let task = Todo(id: 1, todo: "To Delete", completed: false, userID: 1)
+        let task = Todo(id: 1, todo: "To Delete", description: "Delete Description", completed: false, userID: 1)
         mockCoreDataManager.tasks = [task]
         
         // When

@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-@testable import ToDoList_Project  // Замените на имя вашего приложения
+@testable import ToDoList_Project
 
 // MARK: - Mock TaskService
 class MockTaskService: TaskServiceProtocol {
@@ -41,6 +41,7 @@ class MockTaskService: TaskServiceProtocol {
         let newTask = Todo(
             id: (tasks.map { $0.id }.max() ?? 0) + 1,
             todo: title,
+            description: description,
             completed: false,
             userID: 1
         )

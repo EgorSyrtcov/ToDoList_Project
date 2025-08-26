@@ -26,7 +26,7 @@ class ToDoListViewModelTests: XCTestCase {
     
     func testToggleTaskCompletion() {
         // Given
-        let initialTask = Todo(id: 1, todo: "Test Task", completed: false, userID: 1)
+        let initialTask = Todo(id: 1, todo: "Test Task", description: "Test Description", completed: false, userID: 1)
         mockTaskService.tasks = [initialTask]
         
         // When
@@ -39,7 +39,7 @@ class ToDoListViewModelTests: XCTestCase {
     
     func testDeleteTask() {
         // Given
-        let task = Todo(id: 1, todo: "Test Task", completed: false, userID: 1)
+        let task = Todo(id: 1, todo: "Test Task", description: "Test Description", completed: false, userID: 1)
         mockTaskService.tasks = [task]
         
         // When
@@ -52,8 +52,8 @@ class ToDoListViewModelTests: XCTestCase {
     func testUpdateSearchQuery() {
         // Given
         let tasks = [
-            Todo(id: 1, todo: "Buy groceries", completed: false, userID: 1),
-            Todo(id: 2, todo: "Clean house", completed: false, userID: 1)
+            Todo(id: 1, todo: "Buy groceries", description: "Buy milk and bread", completed: false, userID: 1),
+            Todo(id: 2, todo: "Clean house", description: "Clean all rooms", completed: false, userID: 1)
         ]
         mockTaskService.tasks = tasks
         
@@ -79,12 +79,12 @@ class ToDoListViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Add task subject should trigger")
         var receivedValue = false
         
-       // viewModel.routing.addTaskButtonDidTapSubject
-//            .sink {
-//                receivedValue = true
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
+        viewModel.routing.addTaskButtonDidTapSubject
+            .sink {
+                receivedValue = true
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
         
         // When
         viewModel.addTaskDidTapSubject.send()
