@@ -27,6 +27,14 @@ final class ToDoListCoordinator: Coordinator {
     
     private func showAddTaskViewController() {
         let addTaskRouting = AddTaskRouting()
+        addTaskRouting.onDismissTapSubject
+            .sink { [weak self] _ in
+                if let toDoListVC = self?.navigationController.viewControllers.first as? ToDoListViewController {
+                    toDoListVC.viewModel.reloadTableView()
+                }
+                self?.navigationController.popViewController(animated: true)
+            }.store(in: &cancellables)
+        
         let addTaskViewModel = AddTaskViewModel(routing: addTaskRouting)
         let addTaskViewController = AddTaskViewController()
         addTaskViewController.viewModel = addTaskViewModel

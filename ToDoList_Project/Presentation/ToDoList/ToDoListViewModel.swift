@@ -11,6 +11,7 @@ protocol ToDoListInput {
     func deleteTaskCompletion(_ task: Todo)
     func updateSearchQuery(_ query: String)
     func updateFilteredTodos()
+    func reloadTableView()
 }
 
 protocol ToDoListOutput {
@@ -124,6 +125,10 @@ final class ToDoListViewModel: ToDoListVMInterface {
     func updateSearchQuery(_ query: String) {
         searchQuery = query
         updateFilteredTodos()
+    }
+    
+    func reloadTableView() {
+        Task { await requestToDoLists() }
     }
     
     func updateFilteredTodos() {

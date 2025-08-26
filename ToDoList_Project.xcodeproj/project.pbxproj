@@ -134,6 +134,7 @@
 		E2DE80DB2E58F498005249D4 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				E2D25B7F2E59CDC90054E236 /* TaskService.swift */,
 				E2DE80F32E58FCAC005249D4 /* Service.swift */,
 				E2DE80F52E58FCD8005249D4 /* Request.swift */,
 				E2DE80F72E58FCFE005249D4 /* Endpoint.swift */,
@@ -193,7 +194,6 @@
 				E2FEDB9E2E5C97DA00BF20F4 /* ToDoListViews */,
 				E2DE80E92E58F654005249D4 /* ToDoListViewController.swift */,
 				E2DE80EA2E58F654005249D4 /* ToDoListViewModel.swift */,
-				E2D25B7F2E59CDC90054E236 /* TaskService.swift */,
 				E2D25B752E59C2B80054E236 /* TaskTableViewCell.swift */,
 			);
 			path = ToDoList;

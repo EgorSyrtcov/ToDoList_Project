@@ -41,42 +41,6 @@ final class TaskService {
         coreDataManager.deleteTask(task)
     }
     
-    // MARK: - Sync Operations
-    
-    func syncTasks() async -> [Todo] {
-        do {
-            // Получаем задачи с API
-            let apiTasks = try await fetchTasksFromAPI()
-            
-            // Получаем локальные задачи
-            let localTasks = getLocalTasks()
-            
-            // Находим новые задачи (которых нет в локальной базе)
-            let newTasks = apiTasks.filter { apiTask in
-                !localTasks.contains { localTask in
-                    localTask.id == apiTask.id
-                }
-            }
-            
-            if !newTasks.isEmpty {
-                print("�� Найдено \(newTasks.count) новых задач с API")
-                
-                // Добавляем новые задачи в локальную базу
-                for newTask in newTasks {
-                    addTaskLocally(newTask)
-                }
-            }
-            
-            // Возвращаем обновленный список задач
-            return getLocalTasks()
-            
-        } catch {
-            print("❌ Ошибка синхронизации: \(error)")
-            // В случае ошибки возвращаем локальные данные
-            return getLocalTasks()
-        }
-    }
-    
     func createNewTask(title: String, description: String) -> Todo {
         let maxId = coreDataManager.getMaxTaskId()
         let newTask = Todo(
