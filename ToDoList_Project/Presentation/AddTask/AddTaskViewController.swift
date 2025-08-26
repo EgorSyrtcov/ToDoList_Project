@@ -9,9 +9,8 @@ final class AddTaskViewController: UIViewController {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Название задачи"
         textField.textColor = .white
-        textField.backgroundColor = .darkGray
-        textField.borderStyle = .roundedRect
-        textField.font = UIFont.systemFont(ofSize: 16)
+        textField.backgroundColor = .black
+        textField.font = UIFont.systemFont(ofSize: 34)
         textField.returnKeyType = .next
         textField.delegate = self
         textField.autocapitalizationType = .sentences
@@ -22,7 +21,7 @@ final class AddTaskViewController: UIViewController {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textColor = .white
-        textView.backgroundColor = .darkGray
+        textView.backgroundColor = .black
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.layer.cornerRadius = 6
         textView.layer.masksToBounds = true
@@ -35,7 +34,7 @@ final class AddTaskViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.text = formattedCurrentDate()
         return label
     }()
@@ -109,28 +108,29 @@ final class AddTaskViewController: UIViewController {
             .store(in: &cancellables)
         
         viewModel.successPublisher
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] success in
-                        if success {
-                            let message = self?.viewModel.isEditingMode == true ?
-                                "Задача обновлена" : "Задача добавлена"
-                            self?.showSuccessAlert(message: message)
-                        }
-                    }
-                    .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] success in
+                if success {
+                    let message = self?.viewModel.isEditingMode == true ?
+                    "Задача обновлена" : "Задача добавлена"
+                    self?.showSuccessAlert(message: message)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupUI() {
         view.addSubview(scrollView)
+        view.addSubview(saveButton)
         scrollView.addSubview(contentView)
         
-        contentView.addSubviews(titleTextField, descriptionTextView, dateLabel, saveButton)
+        contentView.addSubviews(titleTextField, dateLabel, descriptionTextView)
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -20),
             
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
@@ -138,50 +138,54 @@ final class AddTaskViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
+            // TitleTextField вверху
             titleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             titleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             titleTextField.heightAnchor.constraint(equalToConstant: 44),
             
-            descriptionTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 16),
-            descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            descriptionTextView.heightAnchor.constraint(equalToConstant: 120),
-            
-            dateLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16),
+            // DateLabel под TitleTextField
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 8),
             dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            saveButton.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 30),
-            saveButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            saveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            // DescriptionTextView под DateLabel
+            descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),
+            descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            descriptionTextView.heightAnchor.constraint(equalToConstant: 120),
+            descriptionTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            
+            // SaveButton прижимаем к низу экрана
+            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             saveButton.heightAnchor.constraint(equalToConstant: 50),
-            saveButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
+            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
         
         // Настройка placeholder для TextView только если не в режиме редактирования
-                if !viewModel.isEditingMode {
-                    descriptionTextView.delegate = self
-                    descriptionTextView.text = "Описание задачи (необязательно)"
-                    descriptionTextView.textColor = .lightGray
-                }
-                
-                dateLabel.text = formattedCurrentDate()
+        if !viewModel.isEditingMode {
+            descriptionTextView.delegate = self
+            descriptionTextView.text = "Описание задачи (необязательно)"
+            descriptionTextView.textColor = .lightGray
+        }
+        
+        dateLabel.text = formattedCurrentDate()
     }
     
     // MARK: - Actions
     @objc private func saveButtonTapped() {
-            guard let title = titleTextField.text, !title.trimmingCharacters(in: .whitespaces).isEmpty else {
-                showErrorAlert(message: "Введите название задачи")
-                return
-            }
-            
-            let description = descriptionTextView.textColor == .lightGray ? "" : descriptionTextView.text
-            viewModel.saveTask(
-                title: title,
-                description: description ?? ""
-            )
+        guard let title = titleTextField.text, !title.trimmingCharacters(in: .whitespaces).isEmpty else {
+            showErrorAlert(message: "Введите название задачи")
+            return
         }
+        
+        let description = descriptionTextView.textColor == .lightGray ? "" : descriptionTextView.text
+        viewModel.saveTask(
+            title: title,
+            description: description ?? ""
+        )
+    }
     
     @objc private func keyboardWillShow(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
@@ -189,26 +193,36 @@ final class AddTaskViewController: UIViewController {
         
         let keyboardHeight = keyboardFrame.height
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        
+        // Также поднимаем кнопку если нужно
+        UIView.animate(withDuration: 0.3) {
+            self.saveButton.transform = CGAffineTransform(translationX: 0, y: -keyboardHeight)
+        }
     }
     
     @objc private func keyboardWillHide() {
         scrollView.contentInset = .zero
+        
+        // Возвращаем кнопку на место
+        UIView.animate(withDuration: 0.3) {
+            self.saveButton.transform = .identity
+        }
     }
     
     // MARK: - Alert Methods
     private func showErrorAlert(message: String) {
-           let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
-           alert.addAction(UIAlertAction(title: "OK", style: .default))
-           present(alert, animated: true)
-       }
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
     
     private func showSuccessAlert(message: String) {
-           let alert = UIAlertController(title: "Успешно", message: message, preferredStyle: .alert)
-           present(alert, animated: true)
-           DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-               alert.dismiss(animated: true)
-           }
-       }
+        let alert = UIAlertController(title: "Успешно", message: message, preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            alert.dismiss(animated: true)
+        }
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
@@ -247,19 +261,19 @@ extension AddTaskViewController: UITextViewDelegate {
 extension AddTaskViewController {
     
     private func populateDataIfEditing() {
-            guard let task = viewModel.taskForEditing else { return }
-            
-            // Заполняем поля данными задачи
-            titleTextField.text = task.todo
-            descriptionTextView.text = "Описание задачи" // Замените на реальное поле description если есть
-            descriptionTextView.textColor = .white
-            
-            // Обновляем дату если нужно
-            dateLabel.text = formattedCurrentDate()
-            
-            // Меняем текст кнопки для режима редактирования
-            saveButton.setTitle("Сохранить изменения", for: .normal)
-        }
+        guard let task = viewModel.taskForEditing else { return }
+        
+        // Заполняем поля данными задачи
+        titleTextField.text = task.todo
+        descriptionTextView.text = "Описание задачи"
+        descriptionTextView.textColor = .white
+        
+        // Обновляем дату если нужно
+        dateLabel.text = formattedCurrentDate()
+        
+        // Меняем текст кнопки для режима редактирования
+        saveButton.setTitle("Сохранить изменения", for: .normal)
+    }
     
     private func formattedCurrentDate() -> String {
         let dateFormatter = DateFormatter()
