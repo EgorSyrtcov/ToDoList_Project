@@ -20,7 +20,7 @@ struct LocalTask: Codable, Identifiable {
     init(from todo: Todo) {
         self.id = UUID()
         self.title = todo.todo
-        self.description = "Описание задачи"
+        self.description = todo.description
         self.createdAt = Date()
         self.isCompleted = todo.completed
     }

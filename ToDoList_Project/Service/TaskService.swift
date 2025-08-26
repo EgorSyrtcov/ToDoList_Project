@@ -46,6 +46,7 @@ final class TaskService {
         let newTask = Todo(
             id: maxId + 1,
             todo: title,
+            description: description,
             completed: false,
             userID: 1
         )

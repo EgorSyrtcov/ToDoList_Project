@@ -265,8 +265,16 @@ extension AddTaskViewController {
         
         // Заполняем поля данными задачи
         titleTextField.text = task.todo
-        descriptionTextView.text = "Описание задачи"
-        descriptionTextView.textColor = .white
+        
+        // Заполняем описание, если оно есть
+        if !task.description.isEmpty {
+            descriptionTextView.text = task.description
+            descriptionTextView.textColor = .white
+        } else {
+            descriptionTextView.text = "Описание задачи (необязательно)"
+            descriptionTextView.textColor = .lightGray
+        }
+        descriptionTextView.delegate = self
         
         // Обновляем дату если нужно
         dateLabel.text = formattedCurrentDate()

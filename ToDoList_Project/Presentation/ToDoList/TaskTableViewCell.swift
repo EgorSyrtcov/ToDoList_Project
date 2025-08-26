@@ -103,7 +103,14 @@ final class TaskTableViewCell: UITableViewCell {
             // Полностью очищаем все атрибуты и стили
             titleLabel.attributedText = nil
             titleLabel.text = task.todo
-            descriptionLabel.text = "Описание для задачи: \(task.todo)"
+            
+            // Показываем description если есть, иначе дублируем title
+            if !task.description.isEmpty {
+                descriptionLabel.text = task.description
+            } else {
+                descriptionLabel.text = task.todo
+            }
+            
             dateLabel.text = formatDate(Date())
             
             // Сбрасываем прозрачность

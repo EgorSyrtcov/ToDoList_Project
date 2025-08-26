@@ -11,7 +11,7 @@
 		E2D25B742E59C1B00054E236 /* LocalTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B732E59C1B00054E236 /* LocalTask.swift */; };
 		E2D25B762E59C2B80054E236 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B752E59C2B80054E236 /* TaskTableViewCell.swift */; };
 		E2D25B7C2E59CB610054E236 /* TaskEntity.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B7A2E59CB610054E236 /* TaskEntity.xcdatamodeld */; };
-		E2D25B7E2E59CD5D0054E236 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B7D2E59CD5D0054E236 /* CoreDataManager.swift */; };
+		B6574784-66C0-4BF6-A4B2-92AA95439A45 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F54C080-355C-4242-A188-1164963214AA /* CoreDataManager.swift */; };
 		E2D25B802E59CDC90054E236 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D25B7F2E59CDC90054E236 /* TaskService.swift */; };
 		E2DE80C72E58F438005249D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80C62E58F438005249D4 /* AppDelegate.swift */; };
 		E2DE80C92E58F438005249D4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE80C82E58F438005249D4 /* SceneDelegate.swift */; };
@@ -57,7 +57,7 @@
 		E2D25B732E59C1B00054E236 /* LocalTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTask.swift; sourceTree = "<group>"; };
 		E2D25B752E59C2B80054E236 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 		E2D25B7B2E59CB610054E236 /* TaskEntity.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TaskEntity.xcdatamodel; sourceTree = "<group>"; };
-		E2D25B7D2E59CD5D0054E236 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		9F54C080-355C-4242-A188-1164963214AA /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		E2D25B7F2E59CDC90054E236 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
 		E2DE80C32E58F438005249D4 /* ToDoList_Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList_Project.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2DE80C62E58F438005249D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -141,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				E2DE80E02E58F4DA005249D4 /* Base */,
+				CD01E2FC-4A3B-4A5D-9F07-123456789ABC /* CoreData */,
 				E2DE80DF2E58F4CA005249D4 /* Extention */,
 				E2DE80DE2E58F4BB005249D4 /* Helpers */,
 				E2DE80DD2E58F4B1005249D4 /* Models */,
@@ -170,7 +171,6 @@
 				E2DE80F32E58FCAC005249D4 /* Service.swift */,
 				E2DE80F52E58FCD8005249D4 /* Request.swift */,
 				E2DE80F72E58FCFE005249D4 /* Endpoint.swift */,
-				E2D25B7D2E59CD5D0054E236 /* CoreDataManager.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -261,6 +261,14 @@
 				E2FEDBAD2E5CDEEC00BF20F4 /* AddTaskViewModel.swift */,
 			);
 			path = AddTask;
+			sourceTree = "<group>";
+		};
+		CD01E2FC-4A3B-4A5D-9F07-123456789ABC /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				9F54C080-355C-4242-A188-1164963214AA /* CoreDataManager.swift */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -372,7 +380,7 @@
 				E2DE80F82E58FCFE005249D4 /* Endpoint.swift in Sources */,
 				E2DE80E52E58F587005249D4 /* AppCoordinator.swift in Sources */,
 				E2FEDBAF2E5CDEEC00BF20F4 /* AddTaskViewModel.swift in Sources */,
-				E2D25B7E2E59CD5D0054E236 /* CoreDataManager.swift in Sources */,
+				B6574784-66C0-4BF6-A4B2-92AA95439A45 /* CoreDataManager.swift in Sources */,
 				E2FEDBA62E5C992E00BF20F4 /* ActionPopupPresenter.swift in Sources */,
 				E2DE80E82E58F602005249D4 /* ToDoListCoordinator.swift in Sources */,
 				E2DE80C72E58F438005249D4 /* AppDelegate.swift in Sources */,

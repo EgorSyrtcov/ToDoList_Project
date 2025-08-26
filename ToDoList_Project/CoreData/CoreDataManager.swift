@@ -47,7 +47,7 @@ final class CoreDataManager {
             let taskEntity = TaskEntity(context: context)
             taskEntity.taskId = Int32(task.id)
             taskEntity.title = task.todo
-            taskEntity.taskDescription = "Описание для задачи: \(task.todo)"
+            taskEntity.taskDescription = task.description
             taskEntity.completed = task.completed
             taskEntity.userId = Int32(task.userID)
             taskEntity.createdAt = Date()
@@ -67,6 +67,7 @@ final class CoreDataManager {
                 Todo(
                     id: Int(entity.taskId),
                     todo: entity.title ?? "",
+                    description: entity.taskDescription ?? "",
                     completed: entity.completed,
                     userID: Int(entity.userId)
                 )
@@ -88,8 +89,9 @@ final class CoreDataManager {
             if let taskEntity = taskEntities.first {
                 taskEntity.completed = task.completed
                 taskEntity.title = task.todo
+                taskEntity.taskDescription = task.description
                 saveContext()
-                print("�� Задача обновлена в CoreData: \(task.todo)")
+                print("🔄 Задача обновлена в CoreData: \(task.todo)")
             }
         } catch {
             print("❌ Ошибка обновления задачи в CoreData: \(error)")
@@ -100,7 +102,7 @@ final class CoreDataManager {
         let taskEntity = TaskEntity(context: context)
         taskEntity.taskId = Int32(task.id)
         taskEntity.title = task.todo
-        taskEntity.taskDescription = "Описание для задачи: \(task.todo)"
+        taskEntity.taskDescription = task.description
         taskEntity.completed = task.completed
         taskEntity.userId = Int32(task.userID)
         taskEntity.createdAt = Date()

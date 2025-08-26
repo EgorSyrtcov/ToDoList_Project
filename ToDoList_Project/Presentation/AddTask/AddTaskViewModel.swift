@@ -97,7 +97,7 @@ final class AddTaskViewModel: AddTaskVMInterface {
     private func updateExistingTask(_ task: Todo, newTitle: String, newDescription: String) {
             var updatedTask = task
             updatedTask.todo = newTitle
-            // Если у вас есть поле description в Todo, обновите его здесь
+            updatedTask.description = newDescription
             
             taskService.updateTaskLocally(updatedTask)
             print("✏️ Задача обновлена: \(updatedTask.todo)")

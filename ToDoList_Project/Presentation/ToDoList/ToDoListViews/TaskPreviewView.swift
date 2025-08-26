@@ -62,7 +62,11 @@ final class TaskPreviewView: UIView {
         titleLabel.text = todo.todo
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 2
-        descriptionLabel.attributedText = NSAttributedString(string: "Описание для задачи: \(todo.todo)", attributes: [.paragraphStyle: paragraph])
+        
+        // Показываем description если есть, иначе дублируем title
+        let descriptionText = !todo.description.isEmpty ? todo.description : todo.todo
+        descriptionLabel.attributedText = NSAttributedString(string: descriptionText, attributes: [.paragraphStyle: paragraph])
+        
         let df = DateFormatter(); df.dateFormat = "dd/MM/yy"
         dateLabel.text = df.string(from: Date())
     }
