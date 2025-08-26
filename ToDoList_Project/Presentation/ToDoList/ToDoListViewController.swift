@@ -24,21 +24,49 @@ final class ToDoListViewController: UIViewController {
         return tableView
     }()
     
-    private lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.placeholder = "Search"
-        searchBar.searchBarStyle = .minimal
-        searchBar.delegate = self
-        searchBar.tintColor = .white
-        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            textField.textColor = .white
-            textField.attributedPlaceholder = NSAttributedString(
-                string: "Search",
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-            )
-        }
-        return searchBar
+    private lazy var searchContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+        view.layer.cornerRadius = 10
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
+    private lazy var searchIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "magnifyingglass")
+        imageView.tintColor = .lightGray
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private lazy var searchTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Search"
+        textField.textColor = .white
+        textField.backgroundColor = .clear
+        textField.font = UIFont.systemFont(ofSize: 16)
+        textField.returnKeyType = .search
+        textField.clearButtonMode = .whileEditing
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Search",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        textField.addTarget(self, action: #selector(searchTextDidChange), for: .editingChanged)
+        textField.delegate = self
+        return textField
+    }()
+    
+    private lazy var microphoneButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "mic.fill"), for: .normal)
+        button.tintColor = .lightGray
+        button.addTarget(self, action: #selector(microphoneButtonTapped), for: .touchUpInside)
+        return button
     }()
     
     private lazy var bottomBarView: BottomBarView = {
@@ -83,18 +111,38 @@ final class ToDoListViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.addSubviews(searchBar, tableView, activityIndicator, titleLabel, bottomBarView)
+        view.addSubviews(searchContainerView, tableView, activityIndicator, titleLabel, bottomBarView)
+        searchContainerView.addSubviews(searchIconImageView, searchTextField, microphoneButton)
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
             
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // Search container
+            searchContainerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            searchContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchContainerView.heightAnchor.constraint(equalToConstant: 40),
             
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            // Search icon
+            searchIconImageView.leadingAnchor.constraint(equalTo: searchContainerView.leadingAnchor, constant: 12),
+            searchIconImageView.centerYAnchor.constraint(equalTo: searchContainerView.centerYAnchor),
+            searchIconImageView.widthAnchor.constraint(equalToConstant: 20),
+            searchIconImageView.heightAnchor.constraint(equalToConstant: 20),
+            
+            // Search text field
+            searchTextField.leadingAnchor.constraint(equalTo: searchIconImageView.trailingAnchor, constant: 8),
+            searchTextField.trailingAnchor.constraint(equalTo: microphoneButton.leadingAnchor, constant: -8),
+            searchTextField.centerYAnchor.constraint(equalTo: searchContainerView.centerYAnchor),
+            
+            // Microphone button
+            microphoneButton.trailingAnchor.constraint(equalTo: searchContainerView.trailingAnchor, constant: -12),
+            microphoneButton.centerYAnchor.constraint(equalTo: searchContainerView.centerYAnchor),
+            microphoneButton.widthAnchor.constraint(equalToConstant: 20),
+            microphoneButton.heightAnchor.constraint(equalToConstant: 20),
+            
+            tableView.topAnchor.constraint(equalTo: searchContainerView.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: bottomBarView.topAnchor),
@@ -189,18 +237,27 @@ extension ToDoListViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - UISearchBarDelegate
-extension ToDoListViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.updateSearchQuery(searchText)
+// MARK: - UITextFieldDelegate
+extension ToDoListViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+// MARK: - Search Actions
+extension ToDoListViewController {
+    @objc private func searchTextDidChange() {
+        viewModel.updateSearchQuery(searchTextField.text ?? "")
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
+    @objc private func microphoneButtonTapped() {
+        // Здесь можно добавить функциональность голосового поиска
+        print("🎤 Microphone button tapped")
+        // Пока просто покажем alert
+        let alert = UIAlertController(title: "Voice Search", message: "Voice search functionality would be implemented here", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
